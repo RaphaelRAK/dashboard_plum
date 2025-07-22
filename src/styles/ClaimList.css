@@ -1,0 +1,452 @@
+/* Variables de couleurs */
+:root {
+  /* Mode clair */
+  --primary-color: #1a73e8;
+  --secondary-color: #f8f9fa;
+  --accent-color: #4285f4;
+  --text-primary: #202124;
+  --text-secondary: #5f6368;
+  --border-color: #e0e0e0;
+  --success-color: #34a853;
+  --warning-color: #fbbc04;
+  --error-color: #ea4335;
+  --bg-hover: #f5f5f5;
+  --transition-speed: 0.2s;
+  --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  --border-radius: 12px;
+  
+  /* Mode sombre */
+  --dark-bg-primary: #1f1f1f;
+  --dark-bg-secondary: #242424;
+  --dark-text-primary: #e8eaed;
+  --dark-text-secondary: #9aa0a6;
+  --dark-border-color: #303030;
+  --dark-bg-hover: #2d2d2d;
+  --dark-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Conteneur principal */
+.claims-chat-container {
+  display: flex;
+  height: calc(100vh - 64px);
+  background-color: var(--secondary-color);
+  gap: 1rem;
+  padding: 1rem;
+  overflow: hidden;
+}
+
+/* Pour le mode sombre */
+.dark .claims-chat-container {
+  background-color: #141414;
+}
+
+/* Liste des discussions */
+.claims-list {
+  width: 32%;
+  padding: 1.5rem;
+  background-color: #fff;
+  border-radius: var(--border-radius);
+  overflow-y: auto;
+  max-height: 100%;
+  box-shadow: var(--box-shadow);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.dark .claims-list {
+  background-color: var(--dark-bg-primary);
+  box-shadow: var(--dark-box-shadow);
+  border: 1px solid var(--dark-border-color);
+}
+
+/* Barre de recherche et filtres */
+.claims-search-filter {
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  padding-bottom: 1rem;
+  z-index: 10;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.dark .claims-search-filter {
+  background-color: var(--dark-bg-primary);
+}
+
+/* Conteneur de la liste de réclamations */
+.claims-list-container {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+/* Élément de la liste */
+.claim-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: var(--border-radius);
+  transition: all var(--transition-speed);
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  background-color: #fff;
+}
+
+.dark .claim-item {
+  background-color: var(--dark-bg-secondary);
+  border-color: var(--dark-border-color);
+}
+
+.claim-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow);
+  border-color: var(--primary-color);
+}
+
+.dark .claim-item:hover {
+  background-color: var(--dark-bg-hover);
+  box-shadow: var(--dark-box-shadow);
+  border-color: var(--primary-color);
+}
+
+.claim-item.selected {
+  background-color: rgba(26, 115, 232, 0.08);
+  border-color: var(--primary-color);
+  border-width: 2px;
+}
+
+.dark .claim-item.selected {
+  background-color: rgba(26, 115, 232, 0.15);
+  border-color: var(--primary-color);
+  border-width: 2px;
+}
+
+.claim-avatar {
+  margin-right: 1rem;
+}
+
+.claim-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.claim-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.claim-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-right: 0.5rem;
+}
+
+.dark .claim-name {
+  color: var(--dark-text-primary);
+}
+
+.last-message {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dark .last-message {
+  color: var(--dark-text-secondary);
+}
+
+.claim-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.claim-time {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.dark .claim-time {
+  color: var(--dark-text-secondary);
+}
+
+/* Chat à droite */
+.chat-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+}
+
+.dark .chat-container {
+  background-color: var(--dark-bg-primary);
+  box-shadow: var(--dark-box-shadow);
+  border: 1px solid var(--dark-border-color);
+}
+
+.chat-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.dark .chat-header {
+  background-color: var(--dark-bg-secondary);
+  border-bottom: 1px solid var(--dark-border-color);
+}
+
+.chat-header-info {
+  display: flex;
+  align-items: center;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.dark .chat-messages {
+  background-color: var(--dark-bg-primary);
+}
+
+.chat-input-container {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border-color);
+  background-color: #fff;
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+}
+
+.dark .chat-input-container {
+  background-color: var(--dark-bg-primary);
+  border-top: 1px solid var(--dark-border-color);
+}
+
+/* Style pour l'état vide */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 2rem;
+  text-align: center;
+}
+
+.dark .empty-state {
+  background-color: var(--dark-bg-primary);
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: var(--text-secondary);
+}
+
+.dark .empty-state-icon {
+  color: var(--dark-text-secondary);
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.loading-pulse {
+  animation: pulse 1.5s infinite;
+  background-color: var(--bg-hover);
+  border-radius: var(--border-radius);
+}
+
+.dark .loading-pulse {
+  background-color: var(--dark-bg-hover);
+}
+
+.dark .ant-empty-image {
+  filter: brightness(0.8);
+}
+
+.dark .ant-select-selector,
+.dark .ant-input-affix-wrapper,
+.dark .ant-input {
+  background-color: var(--dark-bg-secondary) !important;
+  border-color: var(--dark-border-color) !important;
+  color: var(--dark-text-primary) !important;
+}
+
+.dark .ant-select-arrow,
+.dark .ant-input-suffix,
+.dark .ant-input-prefix {
+  color: var(--dark-text-secondary) !important;
+}
+
+.dark .ant-divider {
+  border-color: var(--dark-border-color) !important;
+}
+
+.ant-tag {
+  margin-right: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  border-radius: 4px;
+  padding: 0 6px;
+}
+
+.ant-badge-dot {
+  width: 10px;
+  height: 10px;
+  box-shadow: 0 0 0 1px #fff;
+}
+
+.dark .ant-badge-dot {
+  box-shadow: 0 0 0 1px var(--dark-bg-primary);
+}
+
+.claim-info {
+  background-color: #f8f9fa;
+  border-radius: var(--border-radius);
+  padding: 1rem;
+}
+
+.dark .claim-info {
+  background-color: var(--dark-bg-secondary);
+}
+
+.ant-notification-notice {
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.dark .ant-notification-notice {
+  background-color: var(--dark-bg-secondary);
+  box-shadow: var(--dark-box-shadow);
+}
+
+.dark .ant-notification-notice-message,
+.dark .ant-notification-notice-description {
+  color: var(--dark-text-primary);
+}
+
+.claims-search-filter::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 10px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+
+.dark .claims-search-filter::after {
+  background: linear-gradient(
+    to bottom,
+    rgba(31, 31, 31, 0) 0%,
+    rgba(31, 31, 31, 0.8) 50%,
+    rgba(31, 31, 31, 1) 100%
+  );
+}
+
+/* Bouton de retour pour mobile */
+.back-button {
+  margin-right: 10px;
+  display: none;
+}
+
+/* Styles responsives */
+@media (max-width: 768px) {
+  .claims-chat-container {
+    flex-direction: column;
+    padding: 0;
+    gap: 0;
+  }
+
+  .claims-list, 
+  .chat-container {
+    width: 100%;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* État par défaut: afficher uniquement la liste */
+  .claims-list {
+    display: flex;
+    height: 100%;
+  }
+  
+  .chat-container {
+    display: none;
+    height: 100%;
+  }
+
+  /* État lorsqu'une réclamation est sélectionnée en mobile */
+  .mobile-chat-visible .claims-list {
+    display: none;
+  }
+
+  .mobile-chat-visible .chat-container {
+    display: flex;
+  }
+  
+  /* Afficher le bouton retour */
+  .mobile-chat-visible .back-button {
+    display: inline-flex;
+  }
+  
+  /* Ajustements pour le header du chat en mobile */
+  .chat-header {
+    padding: 0.75rem;
+  }
+  
+  .chat-header-info {
+    max-width: 60%;
+  }
+  
+  .chat-header .ant-space {
+    gap: 4px !important;
+  }
+  
+  .chat-header .ant-typography {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+

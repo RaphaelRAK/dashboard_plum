@@ -1,0 +1,18 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copier les fichiers de dépendances
+COPY package*.json ./
+
+# Installer toutes les dépendances (y compris devDependencies)
+RUN npm ci
+
+# Copier le code source
+COPY . .
+
+# Exposer le port par défaut de Vite (5173)
+EXPOSE 5173
+
+# Démarrer avec nodemon pour redémarrer automatiquement
+CMD ["npm", "run", "dev:nodemon"] 

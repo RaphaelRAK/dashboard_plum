@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  dashboard-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"  # Port Vite par défaut
+    volumes:
+      # Mount le code source pour le hot reload
+      - .:/app
+      - /app/node_modules  # Évite de remplacer node_modules du container
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true  # Améliore la détection de changements sur Windows
+    stdin_open: true  # Pour les interactions avec le terminal
+    tty: true 

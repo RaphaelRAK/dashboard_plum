@@ -1,0 +1,220 @@
+:root {
+    --background-color: #ffffff; 
+    --text-color: #000000; 
+    --event-background: #e6f7ff; 
+    --event-finished-background: #f0f0f0;
+    --event-border: #1890ff;
+    --event-finished-border: #d9d9d9;
+    --time-slot-border: #e8e8e8;
+}
+
+[data-theme='dark'] {
+    --background-color: #1f1f1f; 
+    --text-color: #ffffff; 
+    --event-background: #0050b3; 
+    --event-finished-background: #333333;
+    --event-border: #1890ff;
+    --event-finished-border: #8c8c8c;
+    --time-slot-border: #333333;
+}
+
+
+.weekly-calendar {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+/* Ajout de la transition pour une animation fluide du Sider */
+.weekly-calendar .ant-layout-sider {
+    transition: all 0.3s ease;
+}
+
+.event {
+    background-color: var(--event-background);
+    color: var(--text-color);
+    padding: 8px;
+    border-radius: 4px;
+    margin: 4px 0;
+}
+
+.hours-container {
+    display: grid;
+    grid-template-columns: 50px auto;
+    overflow-y: auto;
+    height: calc(90vh - 64px);
+    background-color: var(--background-color);
+  }
+  
+  .hours {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .hour {
+    height: 50px;
+    border-bottom: 1px solid #333;
+    text-align: center;
+    color: var(--text-color);
+  }
+  
+  .events {
+    border-left: 1px solid #333;
+    position: relative;
+  }
+  
+  .hour-slot {
+    height: 50px;
+    border-bottom: 1px solid #333;
+    position: relative;
+  }
+  
+  .current-time-bar {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background-color: red;
+    top: 0;
+  }
+  
+  .event {
+    position: absolute;
+    background-color: #1890ff;
+    color: white;
+    padding: 4px;
+    border-radius: 4px;
+  }
+  
+.calendar-grid {
+  display: flex;
+  overflow-y: auto;
+  height: calc(90vh - 64px);
+  background-color: var(--background-color);
+}
+
+.time-column {
+  min-width: 60px;
+  border-right: 1px solid #333;
+}
+
+.day-column {
+  flex: 1;
+  min-width: 150px;
+  /* border-right: 1px solid #333; */
+}
+
+.header-cell {
+  height: 60px;
+  padding: 8px;
+  text-align: center;
+  border: 1px solid #333;
+  background-color: var(--background-color);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* .header-cell.today {
+  position: relative;
+  background-color: red;
+} */
+
+.header-cell.today .day-number {
+  background-color: #1890ff;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 30%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.header-cell.today .day-name {
+  color: #1890ff;
+  font-weight: bold;
+}
+
+.day-name {
+  margin-bottom: 4px;
+}
+
+.day-number {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hour-cell {
+  height: 60px;
+  border-bottom: 1px solid #333;
+  padding: 4px;
+  text-align: center;
+}
+
+.time-slot {
+  height: 60px;
+  border: 1px solid var(--time-slot-border);
+  position: relative;
+  box-sizing: border-box;
+}
+
+.event {
+  position: relative;
+  background-color: var(--event-background);
+  color: var(--text-color);
+  padding: 8px 12px;
+  border-radius: 8px;
+  width: 90%;
+  margin: 2px auto;
+  z-index: 2;
+  border-left: 3px solid var(--event-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  min-height: 40px;
+  max-height: 55px;
+  overflow: hidden;
+}
+
+.event:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.event-finished {
+  background-color: var(--event-finished-background);
+  border-left: 3px solid var(--event-finished-border);
+  opacity: 0.8;
+}
+
+.event-content {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-time {
+  font-size: 0.8em;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+.current-time-bar {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: red;
+  z-index: 3;
+}
+  

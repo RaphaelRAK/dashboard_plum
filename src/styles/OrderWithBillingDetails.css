@@ -1,0 +1,23 @@
+.order-details {
+    text-align: center; /* Centre le texte dans le conteneur principal */
+}
+
+.order-details table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0; /* Ajoute un espacement autour des tableaux */
+}
+
+.order-details th, .order-details td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.order-details th {
+    background-color: #f2f2f2; /* Couleur de fond pour les en-têtes */
+}
+
+.billing-warning {
+    color: orange;
+    text-align: center; /* Centre le texte d'avertissement */
+}

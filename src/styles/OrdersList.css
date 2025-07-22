@@ -1,0 +1,14 @@
+/* src/styles/OrdersList.css */
+
+.orders-page {
+    padding: 24px;
+    background-color: #f0f2f5;
+}
+
+.orders-list .ant-table {
+    background-color: #fff;
+}
+
+.orders-list .ant-select {
+    margin-bottom: 16px;
+}

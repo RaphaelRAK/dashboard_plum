@@ -1,0 +1,17 @@
+{
+  "watch": ["src/**/*"],
+  "ext": "ts,tsx,js,jsx,css,scss,json",
+  "ignore": [
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    "*.test.*",
+    "*.spec.*"
+  ],
+  "delay": 1000,
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "verbose": true
+} 
