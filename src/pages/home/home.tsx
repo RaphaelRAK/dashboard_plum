@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { Select } from 'antd';
-import GlobeComponent from "../../components/globe/globeComponent";
+import GlobeWrapper from "../../components/globe/GlobeWrapper";
 import { CustomerConfirmedCounter } from "../../components/linking/customerConfirmedCounter";
 import { FliiinkerRefuseCounter } from "../../components/linking/fliiinkerRefuseCounter";
-import CombinedChart from "../../components/orderAnalytics/allOrderComponent";
+// import CombinedChart from "../../components/orderAnalytics/allOrderComponent";
 import OrderCancelled from "../../components/orderAnalytics/orderCancelledCounter";
 import OrderConfirmedCounter from "../../components/orderAnalytics/orderConfirmedCounter";
 import SearchCounter from "../../components/searchAnalytics/searchCounter";
 import "../../styles/home.css";
-import OrderEvolutionBarChart from '../../components/orderAnalytics/allOrderComponent';
-import ConversionRatePieChart from '../../components/searchAnalytics/searchAndOrdersChart';
-import SearchAndOrdersChart from '../../components/searchAnalytics/searchAndOrdersChart';
-import ClaimAndOrderChart from '../../components/claimAnalytics/claimAndOrderChart';
-import LocationMapPage from '../map/locationMapPage';
+// import OrderEvolutionBarChart from '../../components/orderAnalytics/allOrderComponent';
+// import ConversionRatePieChart from '../../components/searchAnalytics/searchAndOrdersChart';
+// import SearchAndOrdersChart from '../../components/searchAnalytics/searchAndOrdersChart';
+// import ClaimAndOrderChart from '../../components/claimAnalytics/claimAndOrderChart';
+import ChartFallback from "../../components/charts/ChartFallback";
+import MapFallback from "../../components/maps/MapFallback";
 import RealtimeClaimComponentCounter from '../../components/claim/RealtimeClaimComponent';
 
 const { Option } = Select;
@@ -33,15 +34,15 @@ export const HomePage: React.FC = () => {
     const renderSelectedChart = () => {
         switch (selectedChart) {
             case 'orderEvolution':
-                return <OrderEvolutionBarChart />;
+                return <ChartFallback title="Évolution des commandes" message="Graphique d'évolution des commandes temporairement indisponible" />;
             // case 'conversionRate':
             //     return <ConversionRatePieChart />;
             case 'searchAndOrders':
-                return <SearchAndOrdersChart />;
+                return <ChartFallback title="Recherches et commandes" message="Graphique des recherches et commandes temporairement indisponible" />;
             case 'claimAndOrder':
-                return <ClaimAndOrderChart />;
+                return <ChartFallback title="Réclamations et commandes" message="Graphique des réclamations et commandes temporairement indisponible" />;
             default:
-                return <OrderEvolutionBarChart />; // Graphique par défaut
+                return <ChartFallback title="Évolution des commandes" message="Graphique d'évolution des commandes temporairement indisponible" />; // Graphique par défaut
         }
     };
 
@@ -56,7 +57,7 @@ export const HomePage: React.FC = () => {
                 <RealtimeClaimComponentCounter />
             </div>
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', width: '100%', marginTop: '20px' }}>
-                <GlobeComponent />
+                <GlobeWrapper />
                 <div style={{ width: '60%', marginLeft: '20px' }}>
                     <div style={{ marginBottom: '20px' }}>
                         <Select
@@ -76,7 +77,7 @@ export const HomePage: React.FC = () => {
                 </div>
             </div>
             <div>
-                <LocationMapPage />
+                <MapFallback message="Carte des localisations temporairement indisponible" />
             </div>  
         </div>
     );

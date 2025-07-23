@@ -41,7 +41,7 @@ const ChatUIComponent: React.FC<ChatUIComponentProps> = ({
     const [inputValue, setInputValue] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const messagesContainerRef = useRef<HTMLDivElement>(null);
-    const { messageApi } = App.useApp();
+    const [messageApi, contextHolder] = message.useMessage();
     const dispatch = useDispatch();
     const adminId = import.meta.env.VITE_CURRENT_USER_ID;
 
@@ -98,6 +98,7 @@ const ChatUIComponent: React.FC<ChatUIComponentProps> = ({
 
     return (
         <>
+            {contextHolder}
             <div 
                 className={`chat-messages ${isDarkMode ? 'dark' : ''}`} 
                 ref={messagesContainerRef}

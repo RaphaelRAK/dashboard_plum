@@ -67,7 +67,10 @@ export const OrdersList: React.FC = () => {
     const loadOrders = async () => {
       try {
         const customerData = await fetchCustomerProfiles();
-        setCustomers(customerData as Customer[]);
+        setCustomers(customerData.map(customer => ({
+          ...customer,
+          updated_at: customer.created_at // Utiliser created_at comme fallback pour updated_at
+        })) as Customer[]);
 
         const fliinkerData = await fetchFliiinkerProfiles();
         setFliinkers(fliinkerData as FliiinkerProfile[]);
@@ -269,7 +272,10 @@ export const OrdersList: React.FC = () => {
                     icon={<EyeOutlined />}
                     onClick={() => {
                       if (record.customer) {
-                        handleViewCustomerDetails(record.customer as Customer);
+                        handleViewCustomerDetails({
+                          ...record.customer,
+                          updated_at: record.customer.created_at
+                        } as Customer);
                       }
                     }}
                   />

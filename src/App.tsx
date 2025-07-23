@@ -40,28 +40,76 @@ import {
   CalendarOutlined,
   PictureOutlined,
   CreditCardOutlined,
-} from '@ant-design/icons';
+} from "@ant-design/icons";
 import { AuthCallback } from "./components/auth/AuthCallback";
 import { Navigate } from "react-router-dom";
 import { Spin } from "antd";
 import { useQuery } from "@tanstack/react-query";
-import { Provider } from 'react-redux';
-import { store } from './store/store';
+import { Provider } from "react-redux";
+import { store } from "./store/store";
 import { lazy, Suspense, useEffect } from "react";
-import { useInitialLoad } from './hooks/useInitialLoad';
-import { ApiMonitor } from './components/ApiMonitor';
-import 'antd/dist/reset.css';
-import { App as AntApp } from 'antd';
+import { useInitialLoad } from "./hooks/useInitialLoad";
+import { ApiMonitor } from "./components/ApiMonitor";
+import PerformanceMonitor from "./components/PerformanceMonitor";
+// import SupabasePerformanceMonitor from './components/SupabasePerformanceMonitor';
+import "antd/dist/reset.css";
+import { App as AntApp } from "antd";
 
-// Lazy loading de toutes les pages
-const HomePageLazy = lazy(() => import("./pages/home/home").then(module => ({ default: module.HomePage })));
-const FliiinkerProfilePageLazy = lazy(() => import("./pages/fliiinker/fliiinkerList").then(module => ({ default: module.FliiinkerLists })));
-const CustomersPageLazy = lazy(() => import("./pages/customer/customerPage").then(module => ({ default: module.CustomersLists })));
-const OrdersListLazy = lazy(() => import("./pages/order/orderList").then(module => ({ default: module.OrdersList })));
-const PaymentHistoryPageLazy = lazy(() => import("./pages/paymentHistory/paymentHistoryPage").then(module => ({ default: module.PaymentHistoryPage })));
-const ClaimListLazy = lazy(() => import("./pages/claim/claimsList").then(module => ({ default: ClaimList })));
-const WeeklyCalendarPageLazy = lazy(() => import("./pages/calendar/calendarPage").then(module => ({ default: module.default })));
-const GalleryPageLazy = lazy(() => import("./pages/phototeque/photoPage").then(module => ({ default: module.GalleryPage })));
+// Register service worker for caching
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then((registration) => {
+        console.log("SW registered: ", registration);
+      })
+      .catch((registrationError) => {
+        console.log("SW registration failed: ", registrationError);
+      });
+  });
+}
+
+// Optimized lazy loading with preloading hints
+const HomePageLazy = lazy(() =>
+  import(/* webpackChunkName: "home" */ "./pages/home/home").then((module) => ({
+    default: module.HomePage,
+  })),
+);
+const FliiinkerProfilePageLazy = lazy(() =>
+  import(
+    /* webpackChunkName: "fliiinker" */ "./pages/fliiinker/fliiinkerList"
+  ).then((module) => ({ default: module.FliiinkerLists })),
+);
+const CustomersPageLazy = lazy(() =>
+  import(
+    /* webpackChunkName: "customers" */ "./pages/customer/customerPage"
+  ).then((module) => ({ default: module.CustomersLists })),
+);
+const OrdersListLazy = lazy(() =>
+  import(/* webpackChunkName: "orders" */ "./pages/order/orderList").then(
+    (module) => ({ default: module.OrdersList }),
+  ),
+);
+const PaymentHistoryPageLazy = lazy(() =>
+  import(
+    /* webpackChunkName: "payments" */ "./pages/paymentHistory/paymentHistoryPage"
+  ).then((module) => ({ default: module.PaymentHistoryPage })),
+);
+const ClaimListLazy = lazy(() =>
+  import(/* webpackChunkName: "claims" */ "./pages/claim/claimsList").then(
+    (module) => ({ default: ClaimList }),
+  ),
+);
+const WeeklyCalendarPageLazy = lazy(() =>
+  import(
+    /* webpackChunkName: "calendar" */ "./pages/calendar/calendarPage"
+  ).then((module) => ({ default: module.default })),
+);
+const GalleryPageLazy = lazy(() =>
+  import(/* webpackChunkName: "gallery" */ "./pages/phototeque/photoPage").then(
+    (module) => ({ default: module.GalleryPage }),
+  ),
+);
 
 function App() {
   return (
@@ -92,11 +140,14 @@ Pour configurer les roles pour accéder à notre dashboard, il faut aller dans l
 // Nouveau composant pour gérer le chargement initial
 const AppContent: React.FC = () => {
   useInitialLoad();
-  
-  const ProtectedRoute: React.FC<{ path: string; children: React.ReactNode }> = ({ path, children }) => {
+
+  const ProtectedRoute: React.FC<{
+    path: string;
+    children: React.ReactNode;
+  }> = ({ path, children }) => {
     const { data: permissions, isLoading } = useQuery(
-      ['routePermissions', path],
-      () => authProvider.getRoutePermissions(path)
+      ["routePermissions", path],
+      () => authProvider.getRoutePermissions(path),
     );
 
     if (isLoading) {
@@ -112,10 +163,16 @@ const AppContent: React.FC = () => {
 
   const UnauthorizedPage: React.FC = () => {
     return (
-      <div style={{ textAlign: 'center', padding: '50px' }}>
+      <div style={{ textAlign: "center", padding: "50px" }}>
         <h2>Accès Non Autorisé</h2>
-        <p>Vous n'avez pas les permissions nécessaires pour accéder à cette page.</p>
-        <Button type="primary" onClick={() => window.history.back()} style={{ marginTop: '20px' }}>
+        <p>
+          Vous n'avez pas les permissions nécessaires pour accéder à cette page.
+        </p>
+        <Button
+          type="primary"
+          onClick={() => window.history.back()}
+          style={{ marginTop: "20px" }}
+        >
           Retour
         </Button>
       </div>
@@ -143,7 +200,7 @@ const AppContent: React.FC = () => {
           list: "/fliiinker_profile",
           meta: {
             label: "Prestataires",
-            icon: <UserOutlined />, 
+            icon: <UserOutlined />,
           },
         },
         {
@@ -151,7 +208,7 @@ const AppContent: React.FC = () => {
           list: "/customers",
           meta: {
             label: "Clients",
-            icon: <UserOutlined />, 
+            icon: <UserOutlined />,
           },
         },
         {
@@ -159,7 +216,7 @@ const AppContent: React.FC = () => {
           list: "/orders",
           meta: {
             label: "Commandes",
-            icon: <ShoppingCartOutlined />, 
+            icon: <ShoppingCartOutlined />,
           },
         },
         {
@@ -167,7 +224,7 @@ const AppContent: React.FC = () => {
           list: "/paymentHistory",
           meta: {
             label: "Historique des paiements",
-            icon: <CreditCardOutlined />, 
+            icon: <CreditCardOutlined />,
           },
         },
         {
@@ -175,7 +232,7 @@ const AppContent: React.FC = () => {
           list: "/claim",
           meta: {
             label: "Réclamations",
-            icon: <SolutionOutlined />, 
+            icon: <SolutionOutlined />,
           },
         },
         {
@@ -183,7 +240,7 @@ const AppContent: React.FC = () => {
           list: "/calendar",
           meta: {
             label: "Calendrier",
-            icon: <CalendarOutlined />, 
+            icon: <CalendarOutlined />,
           },
         },
         {
@@ -191,18 +248,18 @@ const AppContent: React.FC = () => {
           list: "/phototeque",
           meta: {
             label: "Photothèque",
-            icon: <PictureOutlined />, 
+            icon: <PictureOutlined />,
           },
         },
-      ]}                
+      ]}
       options={{
         syncWithLocation: true,
         warnWhenUnsavedChanges: true,
         useNewQueryKeys: true,
         projectId: "P59ifl-o96fp4-BBMBQ9",
-        title: { 
-          text: "Plum dashbaord", 
-          icon: <AppIcon onClick={() => window.location.href = '/home'} />,
+        title: {
+          text: "Plum dashbaord",
+          icon: <AppIcon onClick={() => (window.location.href = "/home")} />,
         },
       }}
     >
@@ -222,91 +279,109 @@ const AppContent: React.FC = () => {
             </Authenticated>
           }
         >
-          <Route
-            index
-            element={<NavigateToResource resource="home" />}
-          />
+          <Route index element={<NavigateToResource resource="home" />} />
           <Route path="/fliiinker_profile">
-            <Route index element={
-              <ProtectedRoute path="/fliiinker_profile">
-                <Suspense fallback={<Spin tip="Chargement..." />}>
-                  <FliiinkerProfilePageLazy />
-                </Suspense>
-              </ProtectedRoute>
-            } />
+            <Route
+              index
+              element={
+                <ProtectedRoute path="/fliiinker_profile">
+                  <Suspense fallback={<Spin tip="Chargement..." />}>
+                    <FliiinkerProfilePageLazy />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
           </Route>
           <Route path="/customers">
-            <Route index element={
-              <ProtectedRoute path="/customers">
-                <Suspense fallback={<Spin tip="Chargement..." />}>
-                  <CustomersPageLazy />
-                </Suspense>
-              </ProtectedRoute>
-            } />
+            <Route
+              index
+              element={
+                <ProtectedRoute path="/customers">
+                  <Suspense fallback={<Spin tip="Chargement..." />}>
+                    <CustomersPageLazy />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
           </Route>
           <Route path="/orders">
-            <Route index element={
-              <ProtectedRoute path="/orders">
-                <Suspense fallback={<Spin tip="Chargement..." />}>
-                  <OrdersListLazy />
-                </Suspense>
-              </ProtectedRoute>
-            } />
+            <Route
+              index
+              element={
+                <ProtectedRoute path="/orders">
+                  <Suspense fallback={<Spin tip="Chargement..." />}>
+                    <OrdersListLazy />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
           </Route>
           <Route path="/paymentHistory">
-            <Route index element={
-              <ProtectedRoute path="/paymentHistory">
-                <Suspense fallback={<Spin tip="Chargement..." />}>
-                  <PaymentHistoryPageLazy />
-                </Suspense>
-              </ProtectedRoute>
-            } />
+            <Route
+              index
+              element={
+                <ProtectedRoute path="/paymentHistory">
+                  <Suspense fallback={<Spin tip="Chargement..." />}>
+                    <PaymentHistoryPageLazy />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
           </Route>
           <Route path="/claim">
-            <Route index element={
-              <ProtectedRoute path="/claim">
-                <Suspense fallback={<Spin tip="Chargement..." />}>
-                  <ClaimListLazy />
-                </Suspense>
-              </ProtectedRoute>
-            } />
+            <Route
+              index
+              element={
+                <ProtectedRoute path="/claim">
+                  <Suspense fallback={<Spin tip="Chargement..." />}>
+                    <ClaimListLazy />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
           </Route>
           <Route path="/calendar">
-            <Route index element={
-              <ProtectedRoute path="/calendar">
-                <Suspense fallback={<Spin tip="Chargement..." />}>
-                  <WeeklyCalendarPageLazy />
-                </Suspense>
-              </ProtectedRoute>
-            } />
+            <Route
+              index
+              element={
+                <ProtectedRoute path="/calendar">
+                  <Suspense fallback={<Spin tip="Chargement..." />}>
+                    <WeeklyCalendarPageLazy />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
           </Route>
           <Route path="/phototeque">
-            <Route index element={
-              <ProtectedRoute path="/phototeque">
-                <Suspense fallback={<Spin tip="Chargement..." />}>
-                  <GalleryPageLazy />
-                </Suspense>
-              </ProtectedRoute>
-            } />
+            <Route
+              index
+              element={
+                <ProtectedRoute path="/phototeque">
+                  <Suspense fallback={<Spin tip="Chargement..." />}>
+                    <GalleryPageLazy />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
           </Route>
           <Route path="/home">
-            <Route index element={
-              <ProtectedRoute path="/home">
-                <Suspense fallback={<Spin tip="Chargement..." />}>
-                  <HomePageLazy />
-                </Suspense>
-              </ProtectedRoute>
-            } />
+            <Route
+              index
+              element={
+                <ProtectedRoute path="/home">
+                  <Suspense fallback={<Spin tip="Chargement..." />}>
+                    <HomePageLazy />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
           </Route>
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
           <Route path="*" element={<ErrorComponent />} />
         </Route>
         <Route
           element={
-            <Authenticated
-              key="authenticated-outer"
-              fallback={<Outlet />}
-            >
+            <Authenticated key="authenticated-outer" fallback={<Outlet />}>
               <NavigateToResource />
             </Authenticated>
           }
@@ -325,18 +400,12 @@ const AppContent: React.FC = () => {
               />
             }
           />
-          <Route
-            path="/register"
-            element={<AuthPage type="register" />}
-          />
+          <Route path="/register" element={<AuthPage type="register" />} />
           <Route
             path="/forgot-password"
             element={<AuthPage type="forgotPassword" />}
           />
-          <Route
-            path="/auth/callback"
-            element={<AuthCallback />}
-          />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route
             path="/update-password"
             element={<AuthPage type="updatePassword" />}
@@ -348,6 +417,8 @@ const AppContent: React.FC = () => {
       <UnsavedChangesNotifier />
       <DocumentTitleHandler />
       {/* <ApiMonitor /> */}
+      {/* <PerformanceMonitor /> */}
+      {/* <SupabasePerformanceMonitor /> */}
     </Refine>
   );
 };

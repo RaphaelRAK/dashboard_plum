@@ -232,6 +232,7 @@ const handleCloseCustomerDetails = () => {
             publicProfile={{
               ...selectedCustomerProfile,
               gender: selectedCustomerProfile?.gender || 'non spécifié',
+              fliiinker_profile: null,
             }}
             onClose={handleCloseCustomerDetails}
           />

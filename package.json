@@ -56,13 +56,15 @@
     "@typescript-eslint/eslint-plugin": "^5.57.1",
     "@typescript-eslint/parser": "^5.57.1",
     "@vitejs/plugin-react": "^4.0.0",
-    "nodemon": "^3.1.7",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.3.4",
+    "nodemon": "^3.1.7",
     "prettier": "^3.4.2",
+    "rollup-plugin-visualizer": "^6.0.3",
+    "terser": "^5.43.1",
     "typescript": "^5.4.2",
     "vite": "^4.3.1"
   },
@@ -71,13 +73,16 @@
     "dev:vite": "vite dev",
     "dev:nodemon": "nodemon --exec \"vite dev\" --ext ts,tsx,js,jsx,css,scss --ignore node_modules --ignore dist",
     "build": "tsc && refine build",
+    "build:analyze": "npm run build && node scripts/analyze-bundle.js",
     "start": "refine start",
     "refine": "refine",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,scss}\"",
     "tsc": "tsc",
-    "server": "node src/utility/server.mjs"
+    "server": "node src/utility/server.mjs",
+    "analyze": "node scripts/analyze-bundle.js",
+    "bundle-report": "npm run build && npx vite-bundle-analyzer dist"
   },
   "browserslist": {
     "production": [

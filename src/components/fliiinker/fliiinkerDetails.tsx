@@ -3,6 +3,7 @@ import { Form, Input, Button, Popconfirm, Select, Avatar, Typography, Card, Tag 
 import { EditOutlined, SaveOutlined, CloseOutlined, UserOutlined, LockOutlined } from "@ant-design/icons";
 import { useUpdate, useDelete } from "@refinedev/core";
 import { Public_profile } from "../../types/public_profileTypes";
+import { FliiinkerProfile } from "../../types/fliiinkerProfileTypes";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 
 const { TextArea } = Input;
@@ -107,6 +108,7 @@ const EditableField: React.FC<EditableFieldProps> = ({
 // Composant principal
 interface FliiinkerDetailsProps {
     publicProfile: Public_profile;
+    fliiinkerProfile?: FliiinkerProfile;
     onClose: () => void;
 }
 

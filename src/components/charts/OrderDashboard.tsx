@@ -2,7 +2,7 @@ import React from "react";
 import { Card, Space, Row, Col } from "antd";
 import CombinedChart from "./CombinedChart";
 import { fetchAllOrderInPeriodForAnalytics } from "../../api/order";
-import { fetchAllClaimInPeriod } from "../../api/claim";
+import { fetchAllClaimInPeriod } from "../../services/claims/claimApi";
 import { Data } from "plotly.js";
 
 const OrderDashboard: React.FC = () => {
