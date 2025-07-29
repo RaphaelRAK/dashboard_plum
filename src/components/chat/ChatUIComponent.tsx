@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { MessageChat } from '../../types/message';
-import { Input, Button, Select, Modal, message, Card, Empty, Typography, Spin, Avatar, Tooltip, Space } from 'antd';
+import { Input, Button, Select, Modal, message, Card, Empty, Typography, Spin, Avatar, Tooltip, Space, App } from 'antd';
 import { 
     SendOutlined, 
     UserOutlined, 
@@ -16,7 +16,7 @@ import { RealtimeChannel } from '@supabase/supabase-js';
 import { ColorModeContext } from '../../contexts/color-mode';
 import { fetchMessagesByChannel, subscribeToMessages, unsubscribeFromMessages } from '../../services/chat/chatApi';
 import { updateClaimStatus as updateClaimStatusApi } from '../../services/claims/claimApi';
-import { App } from 'antd';
+
 import { updateClaimStatus } from '../../store/slices/claimSlice';
 import { useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
@@ -41,7 +41,7 @@ const ChatUIComponent: React.FC<ChatUIComponentProps> = ({
     const [inputValue, setInputValue] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const messagesContainerRef = useRef<HTMLDivElement>(null);
-    const [messageApi, contextHolder] = message.useMessage();
+    const { message: messageApi } = App.useApp();
     const dispatch = useDispatch();
     const adminId = import.meta.env.VITE_CURRENT_USER_ID;
 
@@ -98,7 +98,6 @@ const ChatUIComponent: React.FC<ChatUIComponentProps> = ({
 
     return (
         <>
-            {contextHolder}
             <div 
                 className={`chat-messages ${isDarkMode ? 'dark' : ''}`} 
                 ref={messagesContainerRef}

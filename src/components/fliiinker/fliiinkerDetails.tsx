@@ -108,7 +108,7 @@ const EditableField: React.FC<EditableFieldProps> = ({
 // Composant principal
 interface FliiinkerDetailsProps {
     publicProfile: Public_profile;
-    fliiinkerProfile?: FliiinkerProfile;
+    fliiinkerProfile?: FliiinkerProfile | null;
     onClose: () => void;
 }
 

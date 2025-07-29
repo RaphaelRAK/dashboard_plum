@@ -233,6 +233,7 @@ const handleCloseCustomerDetails = () => {
               ...selectedCustomerProfile,
               gender: selectedCustomerProfile?.gender || 'non spécifié',
               fliiinker_profile: null,
+              updated_at: selectedCustomerProfile?.created_at || new Date().toISOString(),
             }}
             onClose={handleCloseCustomerDetails}
           />

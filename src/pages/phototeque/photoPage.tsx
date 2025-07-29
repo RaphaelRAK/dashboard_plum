@@ -42,6 +42,7 @@ export const GalleryPage: React.FC = () => {
   const defaultPublicProfile: Public_profile = {
     id: '', // ou un ID par défaut
     created_at: '',
+    updated_at: '', // Ajouter updated_at
     email: '',
     gender: 'other',
     fliiinker_profile: fliiinkerProfile,
@@ -222,6 +223,7 @@ export const GalleryPage: React.FC = () => {
         >
           <FliiinkerDetails 
             publicProfile={fliiinkerProfile.public_profile ?? defaultPublicProfile}
+            fliiinkerProfile={fliiinkerProfile}
             onClose={() => setIsFliiinkerDetailsVisible(false)}
           />
         </Modal>

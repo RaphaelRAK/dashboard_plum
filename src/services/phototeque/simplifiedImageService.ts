@@ -92,7 +92,7 @@ export const getAllImages = async (): Promise<CloudflareImage[]> => {
       }
       
       // Filtrer pour les formats d'image
-      const imageObjects = response.Contents.filter(obj => {
+      const imageObjects = response.Contents.filter((obj: any) => {
         const key = obj.Key || '';
         return key.match(/\.(jpg|jpeg|png|gif|webp)$/i);
       });
@@ -100,7 +100,7 @@ export const getAllImages = async (): Promise<CloudflareImage[]> => {
       console.log(`📸 ${imageObjects.length} images trouvées dans R2`);
       
       // Transformer en format CloudflareImage
-      const images = imageObjects.map(obj => {
+      const images = imageObjects.map((obj: any) => {
         const key = obj.Key || '';
         const parts = key.split('/');
         const name = parts.pop() || '';
@@ -189,14 +189,14 @@ export const getImagesByFolder = async (folderPath: string): Promise<CloudflareI
       }
       
       // Filtrer pour les formats d'image
-      const imageObjects = response.Contents.filter(obj => {
+      const imageObjects = response.Contents.filter((obj: any) => {
         const key = obj.Key || '';
         const name = key.split('/').pop() || '';
         return name.match(/\.(jpg|jpeg|png|gif|webp)$/i);
       });
       
       // Transformer en format CloudflareImage
-      const images = imageObjects.map(obj => {
+      const images = imageObjects.map((obj: any) => {
         const key = obj.Key || '';
         const name = key.split('/').pop() || '';
         
@@ -238,7 +238,7 @@ export const getAllFolders = async (): Promise<string[]> => {
       
       // Extraire les dossiers des CommonPrefixes
       if (response.CommonPrefixes) {
-        response.CommonPrefixes.forEach(prefix => {
+        response.CommonPrefixes.forEach((prefix: any) => {
           if (prefix.Prefix) {
             // Enlever le '/' à la fin
             const folderName = prefix.Prefix.replace(/\/$/, '');
@@ -249,7 +249,7 @@ export const getAllFolders = async (): Promise<string[]> => {
       
       // Extraire les dossiers des clés d'objets
       if (response.Contents) {
-        response.Contents.forEach(obj => {
+        response.Contents.forEach((obj: any) => {
           if (obj.Key) {
             const parts = obj.Key.split('/');
             if (parts.length > 1) {

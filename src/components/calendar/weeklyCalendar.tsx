@@ -294,6 +294,7 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ siderVisible = true }) 
             publicProfile: {
               id: completeProfile.id,
               created_at: completeProfile.created_at,
+              updated_at: completeProfile.created_at, // Utiliser created_at comme fallback
               email: completeProfile.email,
               last_name: completeProfile.last_name || "Pas de nom",
               first_name: completeProfile.first_name || "Pas de prénom",

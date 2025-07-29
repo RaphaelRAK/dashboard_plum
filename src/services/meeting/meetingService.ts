@@ -239,6 +239,7 @@ export const fetchMeetingWithProfiles = async (meetingId: string): Promise<Meeti
     const defaultPublicProfile: Public_profile = {
       id: meetingId,
       created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(), // Ajouter updated_at
       email: "email@exemple.com",
       last_name: "Nom",
       first_name: "Prénom",
@@ -273,6 +274,7 @@ export const fetchMeetingWithProfiles = async (meetingId: string): Promise<Meeti
     const errorPublicProfile: Public_profile = {
       id: meetingId,
       created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(), // Ajouter updated_at
       email: "erreur@chargement.com",
       last_name: "Erreur",
       first_name: "Chargement",

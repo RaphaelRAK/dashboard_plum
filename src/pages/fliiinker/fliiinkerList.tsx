@@ -85,6 +85,7 @@ export const FliiinkerLists: React.FC = () => {
         {selectedFliiinker && (
           <FliiinkerDetails
             publicProfile={selectedFliiinker}
+            fliiinkerProfile={selectedFliiinker.fliiinker_profile || null}
             onClose={() => setIsDrawerVisible(false)}
           />
         )}

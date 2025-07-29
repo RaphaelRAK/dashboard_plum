@@ -67,7 +67,7 @@ export const OrdersList: React.FC = () => {
     const loadOrders = async () => {
       try {
         const customerData = await fetchCustomerProfiles();
-        setCustomers(customerData.map(customer => ({
+        setCustomers(customerData.map((customer: any) => ({
           ...customer,
           updated_at: customer.created_at // Utiliser created_at comme fallback pour updated_at
         })) as Customer[]);
@@ -275,7 +275,7 @@ export const OrdersList: React.FC = () => {
                         handleViewCustomerDetails({
                           ...record.customer,
                           updated_at: record.customer.created_at
-                        } as Customer);
+                        } as unknown as Customer);
                       }
                     }}
                   />

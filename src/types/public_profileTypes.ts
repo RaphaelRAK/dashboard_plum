@@ -2,6 +2,7 @@ export interface Public_profile {
     fliiinker_profile: any;
     id: string;
     created_at: string;
+    updated_at: string;
     email: string;
     email_confirmed_at?: string;
     phone?: string;
