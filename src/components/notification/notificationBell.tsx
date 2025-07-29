@@ -57,7 +57,7 @@ const NotificationBell: React.FC<NotificationBellProps> = ({ mode }) => {
 
         console.log("🔍 Récupération des canaux de réclamation");
         const channelIds = await fetchClaimChannels();
-        console.log("🔍 Canaux de réclamation récupérés:", channelIds);
+        console.log("🔍 Canaux de réclamation récupérés: ", channelIds);
 
         // Utiliser un nom de canal fixe au lieu d'un timestamp
         const channelName = `message_notifications_${adminId}`;
