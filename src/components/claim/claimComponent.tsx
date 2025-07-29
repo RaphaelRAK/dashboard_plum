@@ -25,7 +25,12 @@ import ChatUIComponent from "../chat/ChatUIComponent";
 import { RealtimeChannel } from "@supabase/supabase-js";
 import { supabaseClient } from "../../utility/supabaseClient";
 import { ColorModeContext } from "../../contexts/color-mode";
-import { fetchMessagesByChannel } from "../../services/chat/chatApi";
+import {
+  fetchLastMessagesForChannels,
+  fetchMessagesByChannel,
+  LastMessageInfo,
+  LastMessagesMap,
+} from "../../services/chat/chatApi";
 import { sendMessageToChannel } from "../../services/chat/kiplynkChatApi";
 import { updateClaimStatus as updateClaimStatusAction } from "../../store/slices/claimSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -59,20 +64,15 @@ interface ClaimComponentProps {
   messages: MessageChat[];
 }
 
-interface LastMessageInfo {
-  message: string;
-  time: string;
-}
-
-interface LastMessagesMap {
-  [channelId: number]: LastMessageInfo;
-}
-
 interface NewMessage {
   message: string;
   sender_id: string;
   channel_id: number;
   created_at: string;
+}
+
+interface LastMessageTimestamp {
+  [channelId: number]: string; // timestamp du dernier message
 }
 
 const getStatusColor = (status: string) => {
@@ -136,6 +136,8 @@ const ClaimComponent: React.FC<ClaimComponentProps> = ({
   const [messagesState, setMessagesState] =
     useState<MessageChat[]>(initialMessages);
   const [lastMessagesMap, setLastMessagesMap] = useState<LastMessagesMap>({});
+  const [lastMessageTimestamps, setLastMessageTimestamps] =
+    useState<LastMessageTimestamp>({});
   const channelRef = useRef<RealtimeChannel | null>(null);
   const [isLoadingMessages, setIsLoadingMessages] = useState(true);
   const dispatch = useDispatch();
@@ -148,6 +150,23 @@ const ClaimComponent: React.FC<ClaimComponentProps> = ({
   const [isChatVisible, setIsChatVisible] = useState<boolean>(false);
   const [claims, setClaims] = useState<any[]>(initialClaims);
 
+  // Ajouter un debounce pour éviter trop d'appels
+  const [updateTimeout, setUpdateTimeout] = useState<NodeJS.Timeout | null>(
+    null,
+  );
+
+  const debouncedUpdateLastMessages = () => {
+    if (updateTimeout) {
+      clearTimeout(updateTimeout);
+    }
+
+    const timeout = setTimeout(() => {
+      updateLastMessages();
+    }, 500); // Attendre 500ms avant de mettre à jour
+
+    setUpdateTimeout(timeout);
+  };
+
   const containerStyle = {
     backgroundColor: mode === "dark" ? "#141414" : "#f8f9fa",
     color: mode === "dark" ? "#e8eaed" : "#202124",
@@ -159,72 +178,63 @@ const ClaimComponent: React.FC<ClaimComponentProps> = ({
     avatar: claim.public_profile?.avatar || "",
   });
 
-  const getTimeDifference = (createdAt: string) => {
-    const differenceInMs = new Date().getTime() - new Date(createdAt).getTime();
-    const differenceInMinutes = Math.floor(differenceInMs / 60000);
-    const differenceInHours = Math.floor(differenceInMinutes / 60);
-    const differenceInDays = Math.floor(differenceInHours / 24);
+  // Fonction pour obtenir le timestamp du dernier message d'un claim
+  const getLastMessageTimestamp = (claim: any): string => {
+    if (!claim.channel_id) return claim.created_at; // Fallback sur la date de création du claim
 
-    if (differenceInMinutes < 1) {
-      return "À l'instant";
-    } else if (differenceInMinutes < 60) {
-      return `${differenceInMinutes} min`;
-    } else if (differenceInHours < 24) {
-      return `${differenceInHours} h`;
-    } else {
-      return `${differenceInDays} jour${differenceInDays > 1 ? "s" : ""}`;
+    const lastMessage = lastMessagesMap[claim.channel_id];
+    if (lastMessage && lastMessage.timestamp) {
+      return lastMessage.timestamp; // Utiliser le vrai timestamp
     }
+
+    return claim.created_at; // Fallback
   };
 
+  // Fonction pour trier les claims par dernier message
+  const getSortedClaims = () => {
+    const filteredClaims = getFilteredClaims();
+
+    return filteredClaims.sort((a, b) => {
+      const timestampA = getLastMessageTimestamp(a);
+      const timestampB = getLastMessageTimestamp(b);
+
+      // Trier par ordre décroissant (plus récent en premier)
+      return new Date(timestampB).getTime() - new Date(timestampA).getTime();
+    });
+  };
+
+  // Mettre à jour la fonction updateLastMessages
   const updateLastMessages = async () => {
+    console.log("🚀 DÉBUT updateLastMessages optimisé");
     setIsLoadingMessages(true);
     try {
-      const newLastMessagesMap: LastMessagesMap = {};
+      const channelIds = claims
+        .map((claim) => claim.channel_id)
+        .filter(Boolean)
+        .map((id) => id.toString());
 
-      await Promise.all(
-        claims.map(async (claim) => {
-          if (!claim.channel_id) {
-            newLastMessagesMap[claim.id] = {
-              message: "Aucun message",
-              time: "",
-            };
-            return;
-          }
+      console.log("📡 Requête unique pour", channelIds.length, "channels");
 
-          try {
-            const channelMessages = await fetchMessagesByChannel(
-              claim.channel_id.toString(),
-            );
+      if (channelIds.length === 0) {
+        console.log("Aucun channel_id trouvé");
+        setLastMessagesMap({});
+        setLastMessageTimestamps({});
+        return;
+      }
 
-            if (channelMessages.length > 0) {
-              const lastMessage = channelMessages.reduce((latest, current) => {
-                return new Date(latest.created_at) >
-                  new Date(current.created_at)
-                  ? latest
-                  : current;
-              }, channelMessages[0]);
+      // Utiliser la nouvelle API optimisée
+      const lastMessagesMap = await fetchLastMessagesForChannels(channelIds);
+      setLastMessagesMap(lastMessagesMap);
 
-              newLastMessagesMap[claim.channel_id] = {
-                message: lastMessage.message,
-                time: getTimeDifference(lastMessage.created_at),
-              };
-            } else {
-              newLastMessagesMap[claim.channel_id] = {
-                message: "Aucun message",
-                time: "",
-              };
-            }
-          } catch (error) {
-            console.error(`Erreur pour la réclamation ${claim.id}:`, error);
-            newLastMessagesMap[claim.id] = {
-              message: "Erreur de chargement",
-              time: "",
-            };
-          }
-        }),
-      );
-
-      setLastMessagesMap(newLastMessagesMap);
+      // Créer un map des timestamps pour le tri
+      const timestamps: LastMessageTimestamp = {};
+      Object.keys(lastMessagesMap).forEach((channelId) => {
+        const lastMessage = lastMessagesMap[parseInt(channelId)];
+        if (lastMessage && lastMessage.timestamp) {
+          timestamps[parseInt(channelId)] = lastMessage.timestamp; // Utiliser le vrai timestamp
+        }
+      });
+      setLastMessageTimestamps(timestamps);
     } catch (error) {
       console.error(
         "Erreur lors de la mise à jour des derniers messages:",
@@ -275,8 +285,11 @@ const ClaimComponent: React.FC<ClaimComponentProps> = ({
   }, [initialClaims]);
 
   useEffect(() => {
-    updateLastMessages();
-  }, [claims]);
+    // Ne mettre à jour que si les claims ont changé significativement
+    if (claims.length > 0) {
+      debouncedUpdateLastMessages();
+    }
+  }, [claims.length]); // Dépendance sur la longueur plutôt que sur claims
 
   useEffect(() => {
     const loadAllMessages = async () => {
@@ -300,9 +313,9 @@ const ClaimComponent: React.FC<ClaimComponentProps> = ({
       loadAllMessages();
 
       if (selectedClaim.channel_id) {
-        // Nettoyer l'ancien canal s'il existe
+        // Nettoyer l'ancien canal AVANT d'en créer un nouveau
         if (channelRef.current) {
-          console.log("Nettoyage de l'ancien canal de chat");
+          console.log("🧹 Nettoyage de l'ancien canal de chat");
           supabaseClient.removeChannel(channelRef.current);
           channelRef.current = null;
         }
@@ -326,13 +339,8 @@ const ClaimComponent: React.FC<ClaimComponentProps> = ({
                     ...prevMessages,
                     payload.new as MessageChat,
                   ]);
-                  updateLastMessages();
-
-                  setTimeout(() => {
-                    messagesEndRef.current?.scrollIntoView({
-                      behavior: "smooth",
-                    });
-                  }, 100);
+                  // Appeler updateLastMessages de manière optimisée
+                  setTimeout(() => updateLastMessages(), 100);
                   break;
                 case "UPDATE":
                   setMessagesState((prevMessages) =>
@@ -340,24 +348,24 @@ const ClaimComponent: React.FC<ClaimComponentProps> = ({
                       msg.id === payload.new.id ? payload.new : msg,
                     ),
                   );
-                  updateLastMessages();
+                  setTimeout(() => updateLastMessages(), 100);
                   break;
                 case "DELETE":
                   setMessagesState((prevMessages) =>
                     prevMessages.filter((msg) => msg.id !== payload.old.id),
                   );
-                  updateLastMessages();
+                  setTimeout(() => updateLastMessages(), 100);
                   break;
               }
             },
           )
           .subscribe((status) => {
             if (status === "SUBSCRIBED") {
-              console.log("Canal de chat connecté:", channelName);
+              console.log("✅ Canal de chat connecté:", channelName);
             }
             if (status === "CHANNEL_ERROR") {
               console.error(
-                "Erreur de connexion au canal de chat:",
+                "❌ Erreur de connexion au canal de chat:",
                 channelName,
               );
             }
@@ -365,16 +373,28 @@ const ClaimComponent: React.FC<ClaimComponentProps> = ({
 
         channelRef.current = channel;
       }
-
-      return () => {
-        if (channelRef.current) {
-          console.log("Nettoyage du canal de chat lors du démontage");
-          supabaseClient.removeChannel(channelRef.current);
-          channelRef.current = null;
-        }
-      };
     }
+
+    // Nettoyage du canal quand selectedClaim change
+    return () => {
+      if (channelRef.current) {
+        console.log("🧹 Nettoyage du canal lors du changement de claim");
+        supabaseClient.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+    };
   }, [selectedClaim]); // Dépendance uniquement sur selectedClaim
+
+  useEffect(() => {
+    return () => {
+      // Nettoyer tous les canaux au démontage du composant
+      if (channelRef.current) {
+        console.log("�� Nettoyage du canal WebSocket au démontage");
+        supabaseClient.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+    };
+  }, []);
 
   const handleStatusChange = async (claimId: string, newStatus: string) => {
     try {
@@ -634,7 +654,7 @@ const ClaimComponent: React.FC<ClaimComponentProps> = ({
           <div className="claims-list-container">
             <List
               key={`claims-status-${Date.now()}`}
-              dataSource={getFilteredClaims()}
+              dataSource={getSortedClaims()}
               renderItem={(claim) => {
                 const customerInfo = getCustomerInfo(claim);
                 const isSelected =
