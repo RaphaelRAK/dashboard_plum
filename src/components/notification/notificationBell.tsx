@@ -27,9 +27,20 @@ const NotificationBell: React.FC<NotificationBellProps> = ({ mode }) => {
 
   // Ajouter une ref pour stocker le canal
   const channelRef = useRef<RealtimeChannel | null>(null);
+  // Ajouter une ref pour éviter les initialisations multiples
+  const isInitializedRef = useRef(false);
 
   useEffect(() => {
     console.log("🔍 useEffect - Initialisation des notifications");
+
+    // Éviter les initialisations multiples
+    if (isInitializedRef.current) {
+      console.log("🔍 Initialisation déjà en cours, ignoré");
+      return;
+    }
+
+    isInitializedRef.current = true;
+
     const initializeNotifications = async () => {
       try {
         // Nettoyer l'ancien canal s'il existe
@@ -48,25 +59,27 @@ const NotificationBell: React.FC<NotificationBellProps> = ({ mode }) => {
         const channelIds = await fetchClaimChannels();
         console.log("🔍 Canaux de réclamation récupérés:", channelIds);
 
-        // Créer un nouveau canal avec un nom unique
-        const channelName = `message_notifications_${Date.now()}`;
+        // Utiliser un nom de canal fixe au lieu d'un timestamp
+        const channelName = `message_notifications_${adminId}`;
         const channel = setupNotificationChannel(
           channelIds,
           channelName,
           async (newMessage) => {
-            console.log("🔍 Nouveau message reçu:", newMessage);
-            if (newMessage.sender_id === adminId) {
-              console.log("🔍 Message ignoré car envoyé par l'admin");
-              return;
-            }
+            if (newMessage.sender_id === adminId) return;
+
             const sender = await fetchUserById(newMessage.sender_id);
-            console.log("🔍 Expéditeur du message:", sender);
 
             setNotifications((prev) => [newMessage, ...prev]);
-            console.log(
-              "🔍 Notification ajoutée, mise à jour du compteur de non-lus",
-            );
             setUnreadCount((prev) => prev + 1);
+
+            message.warning({
+              content: `Nouveau message de ${sender.first_name} ${sender.last_name} : ${newMessage.message}`,
+              duration: 5,
+              style: {
+                fontSize: "18px",
+                marginTop: "50px",
+              },
+            });
           },
         );
 
@@ -77,6 +90,8 @@ const NotificationBell: React.FC<NotificationBellProps> = ({ mode }) => {
           "Erreur lors de l'initialisation des notifications:",
           error,
         );
+        // Réinitialiser le flag en cas d'erreur
+        isInitializedRef.current = false;
       }
     };
 
@@ -91,51 +106,10 @@ const NotificationBell: React.FC<NotificationBellProps> = ({ mode }) => {
         supabaseClient.removeChannel(channelRef.current);
         channelRef.current = null;
       }
+      // Réinitialiser le flag lors du démontage
+      isInitializedRef.current = false;
     };
   }, []); // Dépendances vides pour éviter les re-souscriptions
-
-  useEffect(() => {
-    console.log(
-      "🔍 useEffect - Chargement des informations du dernier expéditeur",
-    );
-    const loadLastSender = async () => {
-      if (notifications.length === 0) return;
-
-      const lastNotification = notifications[0];
-      const isRecentMessage =
-        Date.now() - new Date(lastNotification.created_at).getTime() < 1000;
-
-      try {
-        const senderData = await fetchUserById(lastNotification.sender_id);
-        setSenders((prev) => ({
-          ...prev,
-          [lastNotification.sender_id]: senderData,
-        }));
-
-        if (
-          senderData.first_name &&
-          senderData.last_name &&
-          lastNotification.message &&
-          isRecentMessage
-        ) {
-          message.warning({
-            content: `Nouveau message de ${senderData.first_name} ${senderData.last_name} ${lastNotification.message}`,
-            duration: 5,
-            style: {
-              fontSize: "18px",
-              marginTop: "50px",
-            },
-          });
-        }
-      } catch (error) {
-        console.error(
-          "Erreur lors du chargement des informations de l'expéditeur:",
-          error,
-        );
-      }
-    };
-    loadLastSender();
-  }, [notifications, message]);
 
   const handleNotificationClick = () => {
     console.log(
@@ -202,7 +176,7 @@ const NotificationBell: React.FC<NotificationBellProps> = ({ mode }) => {
             <Avatar
               src={
                 senders[item.sender_id]?.avatar
-                  ? `${supabase_url_storage_images}${senders[item.sender_id].avatar}`
+                  ? `${supabase_url_storage_images}/${senders[item.sender_id].avatar}`
                   : null
               }
               style={{ marginRight: "10px" }}
