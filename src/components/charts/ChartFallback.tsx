@@ -1,6 +1,6 @@
-import React from 'react';
-import { Card, Empty } from 'antd';
-import { BarChartOutlined } from '@ant-design/icons';
+import React from "react";
+import { Card, Empty } from "antd";
+import { BarChartOutlined } from "@ant-design/icons";
 
 interface ChartFallbackProps {
   width?: number | string;
@@ -10,36 +10,40 @@ interface ChartFallbackProps {
   title?: string;
 }
 
-const ChartFallback: React.FC<ChartFallbackProps> = ({ 
-  width = '100%', 
-  height = 400, 
+const ChartFallback: React.FC<ChartFallbackProps> = ({
+  width = "100%",
+  height = 400,
   message = "Graphique temporairement indisponible",
   style = {},
-  title
+  title,
 }) => {
   return (
-    <Card 
+    <Card
       title={title}
-      style={{ 
-        width, 
-        height, 
-        display: 'flex', 
-        flexDirection: 'column',
-        ...style 
+      style={{
+        width,
+        height,
+        display: "flex",
+        flexDirection: "column",
+        ...style,
       }}
     >
-      <div style={{
-        flex: 1,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <Empty
-          image={<BarChartOutlined style={{ fontSize: '48px', color: '#1890ff' }} />}
+          image={
+            <BarChartOutlined style={{ fontSize: "48px", color: "#1890ff" }} />
+          }
           description={
             <div>
-              <div style={{ marginBottom: '8px' }}>{message}</div>
-              <div style={{ fontSize: '12px', color: '#666' }}>
+              <div style={{ marginBottom: "8px" }}>{message}</div>
+              <div style={{ fontSize: "12px", color: "#666" }}>
                 Les composants de graphiques sont en cours de mise à jour
               </div>
             </div>
@@ -50,4 +54,4 @@ const ChartFallback: React.FC<ChartFallbackProps> = ({
   );
 };
 
-export default ChartFallback; 
+export default ChartFallback;

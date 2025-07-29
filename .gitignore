@@ -34,3 +34,4 @@ _.sln
 
 # ESLint
 .eslintignore
+.vercel
